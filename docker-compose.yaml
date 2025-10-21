@@ -1,0 +1,15 @@
+services:
+  weather-backend:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: weather-backend
+    ports:
+      - ${BACKEND_PORT}:8000
+    environment:
+      - OPEN_WEATHER_KEY=${OPEN_WEATHER_KEY}
+    networks: [Weather_net]
+
+networks:
+  Weather_net:
+    external: false
