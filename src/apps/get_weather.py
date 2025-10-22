@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query, HTTPException
 from typing import Annotated
 from templates.schemas.weather_responses import Weather
 from services.weather import WeatherAPI
+from database.core.post_weather_core import post_weather_implementation
 from loguru import logger
 
 weather_router = APIRouter()
@@ -26,18 +27,25 @@ async def get_weather(city: Annotated[str | None, Query(description="Назва�
     logger.info(f"Query parameters: {city=}, {lat=}, {lon=}")
     external_api = WeatherAPI()
 
-    cur_weather = await external_api.get_weather_by_loc(lat=lat, lon=lon, city=city)
-    logger.info(f"Response from core {cur_weather}")
+    try:
+        cur_weather = await external_api.get_weather_by_loc(lat=lat, lon=lon, city=city)
+        logger.info(f"Response from core {cur_weather}")
+        await post_weather_implementation(
+            lat=cur_weather["lat"],
+            lon=cur_weather["lon"],
+            temp=cur_weather["temp"],
+            wind_speed=cur_weather["wind_speed"],
+            weather_main=cur_weather["weather_main"]
+        )
 
-    return Weather(
-        temperature=cur_weather["temp"],
-        wind_speed=cur_weather["wind_speed"],
-        weather_main=cur_weather["weather_main"]
-    )
-    # try:
-    # except Exception as e:
-    #     logger.error(str(e))
-    #     raise HTTPException(
-    #         400,
-    #         detail="Укажите либо city, либо пару lat+lon.",
-    #     )       
+        return Weather(
+            temperature=cur_weather["temp"],
+            wind_speed=cur_weather["wind_speed"],
+            weather_main=cur_weather["weather_main"]
+        )
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(
+            500,
+            detail=str(e),
+        )       

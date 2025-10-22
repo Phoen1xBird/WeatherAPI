@@ -27,6 +27,8 @@ class WeatherAPI:
         resp = resp.json()
 
         weather = {
+            "lat": lat,
+            "lon": lon,
             "weather_main": " ".join([x["main"] for x in resp["weather"]]),
             "temp": resp["main"]["temp"],
             "wind_speed": resp["wind"]["speed"]
