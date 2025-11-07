@@ -12,9 +12,13 @@ async def get_weather(city: Annotated[str | None, Query(description="Назва�
                       lat: Annotated[float | None, Query(ge=-90, le=90, description="Широта")] = None,
                       lon: Annotated[float | None, Query(ge=-180, le=180, description="Долгота")] = None):
     """
-    Правила:
+    Input:
     - Должен быть указан "city" ИЛИ *оба* "lat" и "lon".
     - Если указаны и город, и координаты — используются координаты.
+    Output:
+    temperature: float, температура в Цельсиях.
+    wind_speed: float, скорость ветра в м/с.
+    weather_main: str, обшая характеристика погоды.
     """
     has_coords = lat is not None and lon is not None
     has_city = city is not None and city.strip() != ""
