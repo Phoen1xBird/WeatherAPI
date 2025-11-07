@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 import asyncio
+import subprocess
 from contextlib import asynccontextmanager
 
 from apps import weather_router
@@ -9,6 +11,8 @@ from apps import weather_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
+        output = subprocess.check_output(["python", "-m", "alembic", "upgrade", "head"], text=True)
+        print(output)
         yield
     finally:
         pass

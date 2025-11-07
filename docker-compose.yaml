@@ -3,12 +3,9 @@ services:
     image: postgres:14-alpine
     container_name: weather-db
     environment:
-      - DATABASE_HOST=${POSTGRES_HOST}
-      - DATABASE_PORT=${POSTGRES_PORT}
-      - DATABASE_LOGIN=${POSTGRES_USER}
-      - PGUSER=${POSTGRES_USER}
-      - DATABASE_PASSWORD=${POSTGRES_PW}
-      - DATABASE_NAME=${POSTGRES_DB}
+      POSTGRES_USER: ${DATABASE_LOGIN}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     restart: on-failure
     volumes:
       - db:/var/lib/postgresql/data
@@ -16,7 +13,7 @@ services:
       - "${DB_PORT}:5432"
     command: postgres -c timezone=Europe/Moscow
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}" ]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 2s
       timeout: 2s
       retries: 3

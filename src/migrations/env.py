@@ -12,6 +12,7 @@ from database.orm.weather_requests_model import WeatherRequests
 from database.orm._base_class import Base
 import os
 from dotenv import load_dotenv
+from loguru import logger
 
 load_dotenv(override=True)
 
@@ -24,13 +25,14 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-DATABASE_HOST = "localhost"
+DATABASE_HOST = os.environ.get("DATABASE_HOST") #"localhost"
 DATABASE_PORT = os.environ.get("DB_PORT")
 DATABASE_LOGIN = os.environ.get("DATABASE_LOGIN")
 DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
 DATABASE_NAME = os.environ.get("DATABASE_NAME")
 
-config.set_main_option("sqlalchemy.url", f"postgresql+asyncpg://{DATABASE_LOGIN}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}")
+logger.info(f"postgresql+asyncpg://{DATABASE_LOGIN}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}")
+config.set_main_option("sqlalchemy.url", database_url_asyncpg())
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
